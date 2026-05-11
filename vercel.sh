@@ -5,8 +5,12 @@ echo "Instalando o Flutter..."
 git clone https://github.com/flutter/flutter.git -b stable --depth 1
 export PATH="`pwd`/flutter/bin:$PATH"
 
+echo "Diagnósticos..."
+flutter --version
+flutter doctor
+
 echo "Rodando pub get..."
 flutter pub get
 
 echo "Fazendo o build para web..."
-flutter build web --release --web-renderer html
+flutter build web --release
