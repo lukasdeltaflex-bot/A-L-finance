@@ -13,4 +13,4 @@ echo "Rodando pub get..."
 flutter pub get
 
 echo "Fazendo o build para web com otimização reduzida para evitar erros de minificação..."
-flutter build web --release -O=1
+flutter build web --release -O 1
