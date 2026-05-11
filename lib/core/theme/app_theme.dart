@@ -21,7 +21,7 @@ class AppTheme {
         headlineLarge: GoogleFonts.outfit(fontWeight: FontWeight.w600, color: AppColors.textLight),
         titleLarge: GoogleFonts.outfit(fontWeight: FontWeight.w600, color: AppColors.textLight),
       ),
-      cardTheme: CardTheme(
+      cardTheme: const CardThemeData(
         color: AppColors.surfaceLight,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -50,7 +50,7 @@ class AppTheme {
         headlineLarge: GoogleFonts.outfit(fontWeight: FontWeight.w600, color: AppColors.textDark),
         titleLarge: GoogleFonts.outfit(fontWeight: FontWeight.w600, color: AppColors.textDark),
       ),
-      cardTheme: CardTheme(
+      cardTheme: const CardThemeData(
         color: AppColors.surfaceDark,
         elevation: 0,
         shape: RoundedRectangleBorder(

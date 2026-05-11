@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../core/theme/app_colors.dart';
+import 'package:al_finance/core/theme/app_colors.dart';
 import '../widgets/balance_card.dart';
 import '../widgets/quick_actions.dart';
 import '../widgets/recent_transactions.dart';

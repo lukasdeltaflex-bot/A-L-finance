@@ -3,7 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:ui';
-import '../../../../core/theme/app_colors.dart';
+import 'package:al_finance/core/theme/app_colors.dart';
 
 class BalanceCard extends StatefulWidget {
   const BalanceCard({super.key});

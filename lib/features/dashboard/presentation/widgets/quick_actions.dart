@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../../core/theme/app_colors.dart';
+import 'package:al_finance/core/theme/app_colors.dart';
 
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
@@ -12,7 +12,7 @@ class QuickActions extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _buildAction(context, 'Transferir', LucideIcons.send, 0),
-        _buildAction(context, 'Pagar', LucideIcons.barcode, 100),
+        _buildAction(context, 'Pagar', Icons.qr_code, 100),
         _buildAction(context, 'Cartões', LucideIcons.creditCard, 200),
         _buildAction(context, 'Metas', LucideIcons.target, 300),
       ],
