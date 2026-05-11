@@ -12,5 +12,5 @@ flutter doctor
 echo "Rodando pub get..."
 flutter pub get
 
-echo "Fazendo o build para web..."
-flutter build web --release
+echo "Fazendo o build para web com otimização reduzida para evitar erros de minificação..."
+flutter build web --release -O=1
