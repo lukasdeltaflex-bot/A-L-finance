@@ -9,4 +9,4 @@ echo "Rodando pub get..."
 flutter pub get
 
 echo "Fazendo o build para web..."
-flutter build web --release
+flutter build web --release --web-renderer html
