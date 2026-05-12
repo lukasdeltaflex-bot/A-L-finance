@@ -1,98 +1,94 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:al_finance/core/theme/app_colors.dart';
+import '../providers/dashboard_providers.dart';
 
-class HealthScoreCard extends StatelessWidget {
+class HealthScoreCard extends ConsumerWidget {
   const HealthScoreCard({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceDark,
-        borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: AppColors.dividerDark.withOpacity(0.3)),
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Saúde Financeira',
-                    style: TextStyle(color: AppColors.textDark, fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    'Baseado nos últimos 30 dias',
-                    style: TextStyle(color: AppColors.textMutedDark, fontSize: 12),
-                  ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.secondary.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Text(
-                  'ESTÁVEL',
-                  style: TextStyle(color: AppColors.secondary, fontSize: 11, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              // Score Circle
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  SizedBox(
-                    width: 80,
-                    height: 80,
-                    child: CircularProgressIndicator(
-                      value: 0.82,
-                      strokeWidth: 8,
-                      backgroundColor: Colors.white.withOpacity(0.05),
-                      valueColor: const AlwaysStoppedAnimation<Color>(AppColors.secondary),
-                      strokeCap: StrokeCap.round,
-                    ),
-                  ),
-                  const Column(
-                    children: [
-                      Text(
-                        '82',
-                        style: TextStyle(color: AppColors.textDark, fontSize: 24, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        '/100',
-                        style: TextStyle(color: AppColors.textMutedDark, fontSize: 10),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(width: 24),
-              Expanded(
-                child: Column(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final healthAsync = ref.watch(financialHealthProvider);
+
+    return healthAsync.when(
+      loading: () => const SizedBox(height: 150, child: Center(child: CircularProgressIndicator())),
+      error: (err, stack) => const Text('Erro ao carregar saúde financeira'),
+      data: (health) => Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceDark,
+          borderRadius: BorderRadius.circular(32),
+          border: Border.all(color: AppColors.dividerDark.withOpacity(0.3)),
+        ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildHealthIndicator('Reserva de Emergência', 0.65, AppColors.primary),
-                    const SizedBox(height: 12),
-                    _buildHealthIndicator('Controle de Dívidas', 0.90, AppColors.secondary),
-                    const SizedBox(height: 12),
-                    _buildHealthIndicator('Sobra Mensal', 0.45, AppColors.warning),
+                    const Text('Saúde Financeira', style: TextStyle(color: AppColors.textDark, fontSize: 18, fontWeight: FontWeight.bold)),
+                    const Text('Baseado nos últimos 30 dias', style: TextStyle(color: AppColors.textMutedDark, fontSize: 12)),
                   ],
                 ),
-              ),
-            ],
-          ),
-        ],
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondary.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    health.status,
+                    style: const TextStyle(color: AppColors.secondary, fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox(
+                      width: 80,
+                      height: 80,
+                      child: CircularProgressIndicator(
+                        value: health.score / 100,
+                        strokeWidth: 8,
+                        backgroundColor: Colors.white.withOpacity(0.05),
+                        valueColor: const AlwaysStoppedAnimation<Color>(AppColors.secondary),
+                        strokeCap: StrokeCap.round,
+                      ),
+                    ),
+                    Column(
+                      children: [
+                        Text('${health.score}', style: const TextStyle(color: AppColors.textDark, fontSize: 24, fontWeight: FontWeight.bold)),
+                        const Text('/100', style: TextStyle(color: AppColors.textMutedDark, fontSize: 10)),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 24),
+                Expanded(
+                  child: Column(
+                    children: health.indicators.map((indicator) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _buildHealthIndicator(
+                        indicator.label, 
+                        indicator.value, 
+                        indicator.value > 0.7 ? AppColors.secondary : (indicator.value > 0.4 ? AppColors.warning : AppColors.error)
+                      ),
+                    )).toList(),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

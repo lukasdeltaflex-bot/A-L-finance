@@ -45,7 +45,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
           constraints: const BoxConstraints(maxWidth: 600),
           child: SafeArea(
             child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
+          physics: const AlwaysScrollableScrollPhysics(), // Handled by platform defaults or custom logic
           slivers: [
             // Professional Header
             SliverToBoxAdapter(
