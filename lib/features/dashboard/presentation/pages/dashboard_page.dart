@@ -11,7 +11,7 @@ import '../widgets/recent_transactions.dart';
 import '../widgets/financial_timeline.dart';
 import '../widgets/health_score_card.dart';
 import '../widgets/smart_insights_feed.dart';
-import '../../../features/auth/presentation/providers/auth_provider.dart';
+import '../../auth/presentation/providers/auth_provider.dart';
 
 class DashboardPage extends ConsumerStatefulWidget {
   const DashboardPage({super.key});

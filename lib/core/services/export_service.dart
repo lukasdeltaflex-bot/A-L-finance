@@ -64,15 +64,22 @@ class ExportService {
     var excel = Excel.createExcel();
     Sheet sheetObject = excel['Transações'];
 
-    sheetObject.appendRow(['Data', 'Descrição', 'Categoria', 'Valor', 'Tipo']);
+    // Excel 4.0.6+ requires CellValue objects
+    sheetObject.appendRow([
+      TextCellValue('Data'),
+      TextCellValue('Descrição'),
+      TextCellValue('Categoria'),
+      TextCellValue('Valor'),
+      TextCellValue('Tipo'),
+    ]);
 
     for (var t in transactions) {
       sheetObject.appendRow([
-        DateFormat('dd/MM/yyyy').format(t.date),
-        t.title,
-        t.category,
-        t.amount,
-        t.type == TransactionType.income ? 'Receita' : 'Despesa'
+        TextCellValue(DateFormat('dd/MM/yyyy').format(t.date)),
+        TextCellValue(t.title),
+        TextCellValue(t.category),
+        DoubleCellValue(t.amount),
+        TextCellValue(t.type == TransactionType.income ? 'Receita' : 'Despesa')
       ]);
     }
 
