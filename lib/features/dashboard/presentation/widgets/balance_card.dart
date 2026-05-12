@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:al_finance/core/theme/app_colors.dart';
 
@@ -15,155 +14,95 @@ class _BalanceCardState extends State<BalanceCard> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(32),
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.primary,
-            AppColors.primaryDark.withOpacity(0.9),
+            AppColors.backgroundDark,
+            Color(0xFF1E293B),
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
+        border: Border.all(color: AppColors.dividerDark.withOpacity(0.5)),
       ),
-      child: Stack(
+      child: Column(
         children: [
-          // Background Decorative Circle
-          Positioned(
-            right: -50,
-            top: -50,
-            child: Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.05),
-              ),
-            ),
-          ),
           Padding(
-            padding: const EdgeInsets.all(28.0),
+            padding: const EdgeInsets.all(24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Saldo Total',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.7),
-                            fontSize: 14,
-                            letterSpacing: 0.5,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Text(
-                              _isVisible ? r'R$ 42.850,00' : '••••••••',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            IconButton(
-                              onPressed: () => setState(() => _isVisible = !_isVisible),
-                              icon: Icon(
-                                _isVisible ? LucideIcons.eye : LucideIcons.eyeOff,
-                                color: Colors.white.withOpacity(0.5),
-                                size: 18,
-                              ),
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(20),
+                    const Text(
+                      'Saldo Real Livre',
+                      style: TextStyle(
+                        color: AppColors.textMutedDark,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
                       ),
-                      child: const Row(
-                        children: [
-                          Icon(LucideIcons.trendingUp, color: AppColors.secondary, size: 14),
-                          SizedBox(width: 4),
-                          Text(
-                            '+12%',
-                            style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                          ),
-                        ],
+                    ),
+                    IconButton(
+                      onPressed: () => setState(() => _isVisible = !_isVisible),
+                      icon: Icon(
+                        _isVisible ? LucideIcons.eye : LucideIcons.eyeOff,
+                        color: AppColors.textMutedDark,
+                        size: 20,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 32),
-                SizedBox(
-                  height: 60,
-                  child: LineChart(
-                    LineChartData(
-                      gridData: const FlGridData(show: false),
-                      titlesData: const FlTitlesData(show: false),
-                      borderData: FlBorderData(show: false),
-                      lineBarsData: [
-                        LineChartBarData(
-                          spots: const [
-                            FlSpot(0, 3),
-                            FlSpot(1, 3.5),
-                            FlSpot(2, 3),
-                            FlSpot(3, 4.5),
-                            FlSpot(4, 4),
-                            FlSpot(5, 5.5),
-                            FlSpot(6, 6),
-                          ],
-                          isCurved: true,
-                          color: Colors.white,
-                          barWidth: 3,
-                          isStrokeCapRound: true,
-                          dotData: const FlDotData(show: false),
-                          belowBarData: BarAreaData(
-                            show: true,
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.white.withOpacity(0.2),
-                                Colors.white.withOpacity(0),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                Text(
+                  _isVisible ? r'R$ 1.600,00' : '••••••••',
+                  style: const TextStyle(
+                    color: AppColors.secondary,
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: -1,
                   ),
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 8),
                 Row(
                   children: [
-                    _buildMiniStat(LucideIcons.arrowDownLeft, 'Entradas', r'R$ 12k', AppColors.secondary),
-                    const SizedBox(width: 24),
-                    _buildMiniStat(LucideIcons.arrowUpRight, 'Saídas', r'R$ 4.2k', AppColors.accent),
+                    const Icon(LucideIcons.info, color: AppColors.textMutedDark, size: 14),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Livre para uso após todas as contas pagas',
+                      style: TextStyle(
+                        color: AppColors.textMutedDark.withOpacity(0.7),
+                        fontSize: 12,
+                      ),
+                    ),
                   ],
                 ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.03),
+              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(32)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildBalanceDetail('Total em Conta', r'R$ 8.000', LucideIcons.wallet),
+                Container(width: 1, height: 30, color: AppColors.dividerDark.withOpacity(0.3)),
+                _buildBalanceDetail('Comprometido', r'R$ 6.400', LucideIcons.lock, color: AppColors.accent),
               ],
             ),
           ),
@@ -172,30 +111,28 @@ class _BalanceCardState extends State<BalanceCard> {
     );
   }
 
-  Widget _buildMiniStat(IconData icon, String label, String value, Color color) {
-    return Row(
+  Widget _buildBalanceDetail(String label, String value, IconData icon, {Color? color}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          padding: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: color, size: 14),
-        ),
-        const SizedBox(width: 8),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        Row(
           children: [
+            Icon(icon, size: 12, color: AppColors.textMutedDark),
+            const SizedBox(width: 4),
             Text(
               label,
-              style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 11, fontWeight: FontWeight.w500),
-            ),
-            Text(
-              _isVisible ? value : '•••',
-              style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+              style: const TextStyle(color: AppColors.textMutedDark, fontSize: 11, fontWeight: FontWeight.w500),
             ),
           ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          _isVisible ? value : '••••',
+          style: TextStyle(
+            color: color ?? AppColors.textDark,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ],
     );

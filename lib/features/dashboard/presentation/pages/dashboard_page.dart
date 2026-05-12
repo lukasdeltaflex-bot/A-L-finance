@@ -5,6 +5,9 @@ import 'package:al_finance/core/theme/app_colors.dart';
 import '../widgets/balance_card.dart';
 import '../widgets/quick_actions.dart';
 import '../widgets/recent_transactions.dart';
+import '../widgets/financial_timeline.dart';
+import '../widgets/health_score_card.dart';
+import '../widgets/smart_insights_feed.dart';
 
 class DashboardPage extends ConsumerStatefulWidget {
   const DashboardPage({super.key});
@@ -25,7 +28,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
-            // Custom Header instead of SliverAppBar for better control
+            // Professional Header
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -34,36 +37,20 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   children: [
                     Row(
                       children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [AppColors.primary, AppColors.primaryLight],
-                            ),
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: const Center(
-                            child: Text(
-                              'AL',
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
+                        _buildUserAvatar('L', AppColors.primary),
+                        const SizedBox(width: -8), // Overlapping avatars
+                        _buildUserAvatar('A', AppColors.secondary),
+                        const SizedBox(width: 16),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Olá, Lukas & Aline',
+                              'Operação Família',
                               style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                             ),
-                            Text(
-                              'Sua central financeira',
-                              style: TextStyle(
-                                color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
-                                fontSize: 12,
-                              ),
+                            const Text(
+                              'Visão Inteligente',
+                              style: TextStyle(color: AppColors.textMutedDark, fontSize: 12),
                             ),
                           ],
                         ),
@@ -71,9 +58,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                     ),
                     Row(
                       children: [
-                        _buildHeaderAction(LucideIcons.bell),
+                        _buildHeaderAction(LucideIcons.search),
                         const SizedBox(width: 8),
-                        _buildHeaderAction(LucideIcons.settings),
+                        _buildHeaderAction(LucideIcons.bell),
                       ],
                     ),
                   ],
@@ -87,65 +74,94 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                 delegate: SliverChildListDelegate([
                   const BalanceCard(),
                   const SizedBox(height: 32),
-                  const QuickActions(),
+                  const HealthScoreCard(),
                   const SizedBox(height: 32),
-                  const RecentTransactions(),
-                  const SizedBox(height: 100), // Bottom padding
+                  const QuickActions(),
                 ]),
               ),
             ),
+
+            const SliverToBoxAdapter(child: FinancialTimeline()),
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+            const SliverToBoxAdapter(child: SmartInsightsFeed()),
+            
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 32),
+              sliver: SliverToBoxAdapter(
+                child: const RecentTransactions(),
+              ),
+            ),
+            
+            const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        child: const Icon(LucideIcons.plus),
+        backgroundColor: AppColors.primary,
+        child: const Icon(LucideIcons.plus, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         notchMargin: 8,
         shape: const CircularNotchedRectangle(),
+        color: AppColors.surfaceDark,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildNavItem(LucideIcons.home, 'Início', true),
-            _buildNavItem(LucideIcons.creditCard, 'Cartões', false),
+            _buildNavItem(LucideIcons.home, true),
+            _buildNavItem(LucideIcons.barChart2, false),
             const SizedBox(width: 48), // Space for FAB
-            _buildNavItem(LucideIcons.pieChart, 'Relatórios', false),
-            _buildNavItem(LucideIcons.user, 'Perfil', false),
+            _buildNavItem(LucideIcons.target, false),
+            _buildNavItem(LucideIcons.users, false),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUserAvatar(String initial, Color color) {
+    return Container(
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        border: Border.all(color: AppColors.backgroundDark, width: 2),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4),
+        ],
+      ),
+      child: Center(
+        child: Text(
+          initial,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
         ),
       ),
     );
   }
 
   Widget _buildHeaderAction(IconData icon) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDarkLighter : Colors.white,
+        color: AppColors.surfaceDarkLighter,
         shape: BoxShape.circle,
-        border: Border.all(color: isDark ? AppColors.dividerDark : AppColors.divider),
+        border: Border.all(color: AppColors.dividerDark.withOpacity(0.5)),
       ),
       child: IconButton(
-        icon: Icon(icon, size: 20),
+        icon: Icon(icon, size: 20, color: AppColors.textDark),
         onPressed: () {},
       ),
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, bool isActive) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          icon: Icon(
-            icon,
-            color: isActive ? AppColors.primary : AppColors.textMutedLight,
-          ),
-          onPressed: () {},
-        ),
-      ],
+  Widget _buildNavItem(IconData icon, bool isActive) {
+    return IconButton(
+      icon: Icon(
+        icon,
+        color: isActive ? AppColors.primary : AppColors.textMutedDark,
+      ),
+      onPressed: () {},
     );
   }
 }
