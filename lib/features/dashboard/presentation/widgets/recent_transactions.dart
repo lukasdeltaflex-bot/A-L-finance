@@ -60,6 +60,7 @@ class RecentTransactions extends StatelessWidget {
     int delay,
   ) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final isIncome = amount.startsWith('+');
 
     return Container(
@@ -69,9 +70,7 @@ class RecentTransactions extends StatelessWidget {
         color: theme.cardTheme.color,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: theme.cardTheme.shape is RoundedRectangleBorder 
-            ? (theme.cardTheme.shape as RoundedRectangleBorder).side.color 
-            : Colors.transparent,
+          color: isDark ? const Color(0xFF2C2C35) : const Color(0xFFEEEEEE),
         ),
       ),
       child: Row(

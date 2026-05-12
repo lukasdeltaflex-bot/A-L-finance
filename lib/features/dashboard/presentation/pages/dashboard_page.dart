@@ -59,7 +59,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                 ),
                 const SizedBox(width: 8),
               ],
-            ).animate().fade().slideY(begin: -0.2, end: 0, duration: 500.ms, curve: Curves.easeOutCubic),
+            ),
             
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
