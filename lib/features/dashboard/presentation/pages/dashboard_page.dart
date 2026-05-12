@@ -40,8 +40,11 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      body: SafeArea(
-        child: CustomScrollView(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: SafeArea(
+            child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
             // Professional Header
@@ -121,6 +124,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
           ],
         ),
       ),
+    ),
+  ),
+),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         backgroundColor: AppColors.primary,

@@ -7,12 +7,13 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:printing/printing.dart';
 import 'package:intl/intl.dart';
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html' as html;
 import '../../../shared/models/transaction.dart';
 
 class ExportService {
   final currencyFormat = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
 
-  // Export to PDF
   Future<void> exportTransactionsToPdf(List<Transaction> transactions) async {
     final pdf = pw.Document();
 
@@ -41,34 +42,30 @@ class ExportService {
                 t.category,
                 currencyFormat.format(t.amount)
               ]),
+              if (transactions.isEmpty) ['-', 'Nenhuma transação no período', '-', '-'],
             ],
           ),
         ],
-        footer: (context) => pw.Center(
-          child: pw.Text('Página ${context.pageNumber} de ${context.pagesCount}'),
-        ),
       ),
     );
 
+    final bytes = await pdf.save();
     if (kIsWeb) {
-      await Printing.sharePdf(bytes: await pdf.save(), filename: 'relatorio_financeiro.pdf');
+      await Printing.sharePdf(bytes: bytes, filename: 'relatorio_financeiro.pdf');
     } else {
       final output = await getTemporaryDirectory();
       final file = File('${output.path}/relatorio_financeiro.pdf');
-      await file.writeAsBytes(await pdf.save());
+      await file.writeAsBytes(bytes);
       await Share.shareXFiles([XFile(file.path)], text: 'Meu Relatório Financeiro');
     }
   }
 
-  // Export to Excel
   Future<void> exportTransactionsToExcel(List<Transaction> transactions) async {
     var excel = Excel.createExcel();
     Sheet sheetObject = excel['Transações'];
 
-    // Header
     sheetObject.appendRow(['Data', 'Descrição', 'Categoria', 'Valor', 'Tipo']);
 
-    // Data
     for (var t in transactions) {
       sheetObject.appendRow([
         DateFormat('dd/MM/yyyy').format(t.date),
@@ -79,11 +76,15 @@ class ExportService {
       ]);
     }
 
-    var bytes = excel.save();
+    final bytes = excel.save();
     if (bytes != null) {
       if (kIsWeb) {
-        // Web download logic (omitted for brevity, typically uses dart:html)
-        await Printing.sharePdf(bytes: Uint8List.fromList(bytes), filename: 'relatorio_financeiro.xlsx');
+        final blob = html.Blob([bytes]);
+        final url = html.Url.createObjectUrlFromBlob(blob);
+        final anchor = html.AnchorElement(href: url)
+          ..setAttribute("download", "relatorio_financeiro.xlsx")
+          ..click();
+        html.Url.revokeObjectUrl(url);
       } else {
         final output = await getTemporaryDirectory();
         final file = File('${output.path}/relatorio_financeiro.xlsx');
