@@ -12,5 +12,5 @@ flutter doctor
 echo "Rodando pub get..."
 flutter pub get
 
-echo "Fazendo o build para web sem otimização (-O0) para garantir que nada quebre..."
-flutter build web --release -O 0
+echo "Fazendo o build para web em modo PROFILE para debug de erros..."
+flutter build web --profile
