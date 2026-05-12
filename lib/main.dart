@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/theme/app_theme.dart';
-import 'features/dashboard/presentation/pages/dashboard_page.dart';
+import 'core/router/app_router.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Initialize Supabase here in the future
+  
+  // Replace with your real Supabase URL and Anon Key
+  await Supabase.initialize(
+    url: 'https://your-project.supabase.co',
+    anonKey: 'your-anon-key',
+  );
+
   runApp(const ProviderScope(child: ALFinanceApp()));
 }
 
@@ -14,13 +21,15 @@ class ALFinanceApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MaterialApp(
+    final router = ref.watch(routerProvider);
+
+    return MaterialApp.router(
       title: 'A&L Finance',
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.system,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      home: const DashboardPage(),
+      routerConfig: router,
     );
   }
 }

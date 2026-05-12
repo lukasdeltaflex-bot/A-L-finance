@@ -58,9 +58,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                     ),
                     Row(
                       children: [
-                        _buildHeaderAction(LucideIcons.search),
+                        _buildHeaderAction(LucideIcons.search, () {}),
                         const SizedBox(width: 8),
-                        _buildHeaderAction(LucideIcons.bell),
+                        _buildHeaderAction(LucideIcons.logOut, () => ref.read(authServiceProvider).signOut()),
                       ],
                     ),
                   ],
@@ -141,7 +141,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     );
   }
 
-  Widget _buildHeaderAction(IconData icon) {
+  Widget _buildHeaderAction(IconData icon, VoidCallback onTap) {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surfaceDarkLighter,
@@ -150,7 +150,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       ),
       child: IconButton(
         icon: Icon(icon, size: 20, color: AppColors.textDark),
-        onPressed: () {},
+        onPressed: onTap,
       ),
     );
   }
