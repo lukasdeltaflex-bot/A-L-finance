@@ -14,39 +14,22 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
-  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
   bool _isLoading = false;
 
   Future<void> _handleLogin() async {
-    if (!_formKey.currentState!.validate()) return;
-
     setState(() => _isLoading = true);
     try {
       await ref.read(authServiceProvider).signIn(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
       );
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao entrar: ${e.toString()}')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  Future<void> _handleGoogleLogin() async {
-    setState(() => _isLoading = true);
-    try {
-      await ref.read(authServiceProvider).signInWithGoogle();
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro com Google: ${e.toString()}')),
+          SnackBar(content: Text('Erro ao entrar: $e'), backgroundColor: AppColors.error),
         );
       }
     } finally {
@@ -60,136 +43,128 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      body: SafeArea(
+      backgroundColor: isDark ? AppColors.backgroundDark : Colors.white,
+      body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
-          child: Form(
-            key: _formKey,
+          padding: const EdgeInsets.all(24.0),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Logo & Welcome
-                Center(
-                  child: Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [AppColors.primary, AppColors.primaryLight],
-                      ),
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withOpacity(0.3),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(LucideIcons.wallet, color: Colors.white, size: 40),
+                // Minimalist Logo
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 4)),
+                    ],
                   ),
+                  child: const Icon(LucideIcons.wallet, color: Colors.white, size: 24),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 24),
+                
+                // Titles
                 Text(
                   'Bem-vindo de volta',
-                  style: theme.textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, letterSpacing: -0.5),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Entre para gerenciar as finanças da sua família.',
-                  style: TextStyle(
-                    color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 48),
-
-                // Fields
-                CustomTextField(
-                  label: 'E-mail',
-                  hint: 'exemplo@email.com',
-                  prefixIcon: LucideIcons.mail,
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (v) => v!.isEmpty ? 'Informe seu e-mail' : null,
-                ),
-                const SizedBox(height: 24),
-                CustomTextField(
-                  label: 'Senha',
-                  hint: '••••••••',
-                  prefixIcon: LucideIcons.lock,
-                  isPassword: true,
-                  controller: _passwordController,
-                  validator: (v) => v!.length < 6 ? 'Mínimo 6 caracteres' : null,
-                ),
-                
-                // Forgot Password
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {}, // TODO: Forgot password logic
-                    child: const Text('Esqueceu a senha?'),
-                  ),
+                  'Acesse sua conta para continuar',
+                  style: TextStyle(color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight, fontSize: 14),
                 ),
                 const SizedBox(height: 32),
 
-                // Login Button
+                // Form
+                CustomTextField(
+                  label: 'E-mail',
+                  hint: 'exemplo@email.com',
+                  icon: LucideIcons.mail,
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    CustomTextField(
+                      label: 'Senha',
+                      hint: 'Sua senha segura',
+                      icon: LucideIcons.lock,
+                      isPassword: true,
+                      obscureText: _obscurePassword,
+                      onTogglePassword: () => setState(() => _obscurePassword = !_obscurePassword),
+                      controller: _passwordController,
+                    ),
+                    TextButton(
+                      onPressed: () {},
+                      style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: const Size(0, 30), tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                      child: const Text('Esqueceu a senha?', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                // Action Buttons
                 SizedBox(
                   width: double.infinity,
-                  height: 60,
+                  height: 48,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _handleLogin,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     child: _isLoading 
-                      ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Text('Entrar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      : const Text('Entrar', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                   ),
                 ),
-                const SizedBox(height: 24),
-
-                // Social Login
+                const SizedBox(height: 16),
+                
+                // Divider
                 Row(
                   children: [
-                    const Expanded(child: Divider()),
+                    Expanded(child: Divider(color: isDark ? AppColors.dividerDark : AppColors.divider)),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text('ou entre com', style: TextStyle(color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight, fontSize: 12)),
+                      child: Text('ou continue com', style: TextStyle(fontSize: 12, color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight)),
                     ),
-                    const Expanded(child: Divider()),
+                    Expanded(child: Divider(color: isDark ? AppColors.dividerDark : AppColors.divider)),
                   ],
                 ),
-                const SizedBox(height: 24),
-                
+                const SizedBox(height: 16),
+
+                // Google Login
                 SizedBox(
                   width: double.infinity,
-                  height: 60,
+                  height: 48,
                   child: OutlinedButton.icon(
-                    onPressed: _isLoading ? null : _handleGoogleLogin,
-                    icon: const Icon(LucideIcons.chrome, size: 20),
-                    label: const Text('Google', style: TextStyle(fontWeight: FontWeight.bold)),
+                    onPressed: () => ref.read(authServiceProvider).signInWithGoogle(),
+                    icon: const Icon(LucideIcons.chrome, size: 18),
+                    label: const Text('Google', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                     style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       side: BorderSide(color: isDark ? AppColors.dividerDark : AppColors.divider),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                   ),
                 ),
-                
-                const SizedBox(height: 40),
-                
-                // Register
+                const SizedBox(height: 32),
+
+                // Footer
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Não tem uma conta?', style: TextStyle(color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight)),
+                    Text('Ainda não tem conta?', style: TextStyle(color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight, fontSize: 14)),
                     TextButton(
                       onPressed: () => context.push('/register'),
-                      child: const Text('Criar conta', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: const Text('Crie uma agora', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                     ),
                   ],
                 ),

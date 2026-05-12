@@ -14,27 +14,30 @@ class RegisterPage extends ConsumerStatefulWidget {
 }
 
 class _RegisterPageState extends ConsumerState<RegisterPage> {
-  final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
   bool _isLoading = false;
 
   Future<void> _handleRegister() async {
-    if (!_formKey.currentState!.validate()) return;
-
     setState(() => _isLoading = true);
     try {
       await ref.read(authServiceProvider).signUp(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-        fullName: _nameController.text.trim(),
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+        _nameController.text.trim(),
       );
-      if (mounted) context.go('/login');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Conta criada! Verifique seu e-mail.'), backgroundColor: AppColors.success),
+        );
+        context.go('/login');
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao criar conta: ${e.toString()}')),
+          SnackBar(content: Text('Erro ao cadastrar: $e'), backgroundColor: AppColors.error),
         );
       }
     } finally {
@@ -48,70 +51,106 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(leading: IconButton(icon: const Icon(LucideIcons.arrowLeft), onPressed: () => context.pop())),
-      body: SafeArea(
+      backgroundColor: isDark ? AppColors.backgroundDark : Colors.white,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(LucideIcons.arrowLeft, size: 20),
+          onPressed: () => context.pop(),
+        ),
+        backgroundColor: Colors.transparent,
+      ),
+      body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-          child: Form(
-            key: _formKey,
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // Minimalist Logo
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: AppColors.secondary,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(color: AppColors.secondary.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 4)),
+                    ],
+                  ),
+                  child: const Icon(LucideIcons.userPlus, color: Colors.white, size: 24),
+                ),
+                const SizedBox(height: 24),
+                
+                // Titles
                 Text(
-                  'Criar conta',
-                  style: theme.textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold),
+                  'Crie sua conta',
+                  style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, letterSpacing: -0.5),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Comece hoje a organizar o futuro da sua família.',
-                  style: TextStyle(
-                    color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
-                    fontSize: 16,
-                  ),
+                  'Comece a gerenciar suas finanças com inteligência',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight, fontSize: 14),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 32),
 
+                // Form
                 CustomTextField(
                   label: 'Nome Completo',
-                  hint: 'João Silva',
-                  prefixIcon: LucideIcons.user,
+                  hint: 'Como quer ser chamado',
+                  icon: LucideIcons.user,
                   controller: _nameController,
-                  validator: (v) => v!.isEmpty ? 'Informe seu nome' : null,
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 CustomTextField(
                   label: 'E-mail',
                   hint: 'exemplo@email.com',
-                  prefixIcon: LucideIcons.mail,
+                  icon: LucideIcons.mail,
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  validator: (v) => v!.isEmpty ? 'Informe seu e-mail' : null,
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 CustomTextField(
                   label: 'Senha',
-                  hint: '••••••••',
-                  prefixIcon: LucideIcons.lock,
+                  hint: 'No mínimo 6 caracteres',
+                  icon: LucideIcons.lock,
                   isPassword: true,
+                  obscureText: _obscurePassword,
+                  onTogglePassword: () => setState(() => _obscurePassword = !_obscurePassword),
                   controller: _passwordController,
-                  validator: (v) => v!.length < 6 ? 'Mínimo 6 caracteres' : null,
                 ),
-                const SizedBox(height: 48),
+                const SizedBox(height: 32),
 
+                // Action Button
                 SizedBox(
                   width: double.infinity,
-                  height: 60,
+                  height: 48,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _handleRegister,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     child: _isLoading 
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Criar conta', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      : const Text('Criar Conta', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                   ),
+                ),
+                const SizedBox(height: 24),
+
+                // Footer
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Já tem uma conta?', style: TextStyle(color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight, fontSize: 14)),
+                    TextButton(
+                      onPressed: () => context.pop(),
+                      child: const Text('Entrar', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                    ),
+                  ],
                 ),
               ],
             ),

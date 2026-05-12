@@ -1,34 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import 'package:al_finance/core/theme/app_colors.dart';
 
-class CustomTextField extends StatefulWidget {
+class CustomTextField extends StatelessWidget {
   final String label;
   final String hint;
-  final IconData? prefixIcon;
+  final IconData icon;
   final bool isPassword;
+  final bool obscureText;
+  final VoidCallback? onTogglePassword;
   final TextEditingController? controller;
   final String? Function(String?)? validator;
-  final TextInputType keyboardType;
+  final TextInputType? keyboardType;
 
   const CustomTextField({
     super.key,
     required this.label,
     required this.hint,
-    this.prefixIcon,
+    required this.icon,
     this.isPassword = false,
+    this.obscureText = false,
+    this.onTogglePassword,
     this.controller,
     this.validator,
-    this.keyboardType = TextInputType.text,
+    this.keyboardType,
   });
-
-  @override
-  State<CustomTextField> createState() => _CustomTextFieldState();
-}
-
-class _CustomTextFieldState extends State<CustomTextField> {
-  bool _obscureText = true;
-  bool _isFocused = false;
 
   @override
   Widget build(BuildContext context) {
@@ -38,61 +33,56 @@ class _CustomTextFieldState extends State<CustomTextField> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          widget.label,
+          label,
           style: TextStyle(
-            fontSize: 13,
+            fontSize: 12,
             fontWeight: FontWeight.w600,
             color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+            letterSpacing: 0.2,
           ),
         ),
-        const SizedBox(height: 8),
-        Focus(
-          onFocusChange: (hasFocus) => setState(() => _isFocused = hasFocus),
-          child: TextFormField(
-            controller: widget.controller,
-            obscureText: widget.isPassword ? _obscureText : false,
-            validator: widget.validator,
-            keyboardType: widget.keyboardType,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            decoration: InputDecoration(
-              hintText: widget.hint,
-              hintStyle: TextStyle(color: isDark ? Colors.white24 : Colors.black26),
-              prefixIcon: widget.prefixIcon != null 
-                ? Icon(widget.prefixIcon, size: 20, color: _isFocused ? AppColors.primary : (isDark ? Colors.white38 : Colors.black38))
-                : null,
-              suffixIcon: widget.isPassword
-                ? AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    child: IconButton(
-                      key: ValueKey(_obscureText),
-                      icon: Icon(
-                        _obscureText ? LucideIcons.eye : LucideIcons.eyeOff,
-                        size: 20,
-                        color: isDark ? Colors.white38 : Colors.black38,
-                      ),
-                      onPressed: () => setState(() => _obscureText = !_obscureText),
+        const SizedBox(height: 6),
+        TextFormField(
+          controller: controller,
+          obscureText: obscureText,
+          validator: validator,
+          keyboardType: keyboardType,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(
+              color: isDark ? AppColors.textMutedDark.withOpacity(0.5) : AppColors.textMutedLight.withOpacity(0.5),
+              fontSize: 14,
+            ),
+            prefixIcon: Icon(icon, size: 18, color: AppColors.primary.withOpacity(0.7)),
+            suffixIcon: isPassword
+                ? IconButton(
+                    icon: Icon(
+                      obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                      size: 18,
+                      color: AppColors.textMutedDark,
                     ),
+                    onPressed: onTogglePassword,
                   )
                 : null,
-              filled: true,
-              fillColor: isDark ? AppColors.surfaceDarkLighter.withOpacity(0.5) : Colors.white,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: isDark ? AppColors.dividerDark.withOpacity(0.5) : AppColors.divider),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: AppColors.primary, width: 2),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: AppColors.error),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: AppColors.error, width: 2),
-              ),
+            filled: true,
+            fillColor: isDark ? AppColors.surfaceDarkLighter : Colors.grey[50],
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: isDark ? AppColors.dividerDark : AppColors.divider),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: isDark ? AppColors.dividerDark : AppColors.divider),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.error, width: 1),
             ),
           ),
         ),
