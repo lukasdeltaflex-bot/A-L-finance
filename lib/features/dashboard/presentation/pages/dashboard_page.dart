@@ -11,7 +11,7 @@ import '../widgets/recent_transactions.dart';
 import '../widgets/financial_timeline.dart';
 import '../widgets/health_score_card.dart';
 import '../widgets/smart_insights_feed.dart';
-import '../../auth/presentation/providers/auth_provider.dart';
+import '../../../features/auth/presentation/providers/auth_provider.dart';
 
 class DashboardPage extends ConsumerStatefulWidget {
   const DashboardPage({super.key});
@@ -45,88 +45,87 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
           constraints: const BoxConstraints(maxWidth: 600),
           child: SafeArea(
             child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(), // Handled by platform defaults or custom logic
-          slivers: [
-            // Professional Header
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                // Professional Header
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildUserAvatar('L', AppColors.primary),
-                        const SizedBox(width: -8),
-                        _buildUserAvatar('A', AppColors.secondary),
-                        const SizedBox(width: 16),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        Row(
                           children: [
-                            Text(
-                              'Operação Família',
-                              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                            _buildUserAvatar('L', AppColors.primary),
+                            const SizedBox(width: -8),
+                            _buildUserAvatar('A', AppColors.secondary),
+                            const SizedBox(width: 16),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Operação Família',
+                                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                const Text('Visão Inteligente', style: TextStyle(color: AppColors.textMutedDark, fontSize: 12)),
+                              ],
                             ),
-                            const Text('Visão Inteligente', style: TextStyle(color: AppColors.textMutedDark, fontSize: 12)),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            _buildHeaderAction(LucideIcons.sliders, _showFilters),
+                            const SizedBox(width: 8),
+                            _buildHeaderAction(LucideIcons.logOut, () => ref.read(authServiceProvider).signOut()),
                           ],
                         ),
                       ],
                     ),
-                    Row(
-                      children: [
-                        _buildHeaderAction(LucideIcons.sliders, _showFilters),
-                        const SizedBox(width: 8),
-                        _buildHeaderAction(LucideIcons.logOut, () => ref.read(authServiceProvider).signOut()),
-                      ],
+                  ),
+                ),
+
+                // Period Filter Bar
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 24),
+                    child: FilterChipBar(
+                      filters: const ['Hoje', 'Esta Semana', 'Este Mês', 'Últimos 90 dias', '2024'],
+                      selectedFilter: _selectedPeriod,
+                      onFilterSelected: (val) => setState(() => _selectedPeriod = val),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
 
-            // Period Filter Bar
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 24),
-                child: FilterChipBar(
-                  filters: const ['Hoje', 'Esta Semana', 'Este Mês', 'Últimos 90 dias', '2024'],
-                  selectedFilter: _selectedPeriod,
-                  onFilterSelected: (val) => setState(() => _selectedPeriod = val),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      const BalanceCard(),
+                      const SizedBox(height: 32),
+                      const HealthScoreCard(),
+                      const SizedBox(height: 32),
+                      _buildExportSection(),
+                      const SizedBox(height: 32),
+                      const QuickActions(),
+                    ]),
+                  ),
                 ),
-              ),
-            ),
 
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  const BalanceCard(),
-                  const SizedBox(height: 32),
-                  const HealthScoreCard(),
-                  const SizedBox(height: 32),
-                  _buildExportSection(),
-                  const SizedBox(height: 32),
-                  const QuickActions(),
-                ]),
-              ),
+                const SliverToBoxAdapter(child: FinancialTimeline()),
+                const SliverToBoxAdapter(child: SizedBox(height: 32)),
+                const SliverToBoxAdapter(child: SmartInsightsFeed()),
+                
+                const SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 32),
+                  sliver: SliverToBoxAdapter(child: RecentTransactions()),
+                ),
+                
+                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              ],
             ),
-
-            const SliverToBoxAdapter(child: FinancialTimeline()),
-            const SliverToBoxAdapter(child: SizedBox(height: 32)),
-            const SliverToBoxAdapter(child: SmartInsightsFeed()),
-            
-            const SliverPadding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 32),
-              sliver: SliverToBoxAdapter(child: RecentTransactions()),
-            ),
-            
-            const SliverToBoxAdapter(child: SizedBox(height: 100)),
-          ],
+          ),
         ),
       ),
-    ),
-  ),
-),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         backgroundColor: AppColors.primary,
