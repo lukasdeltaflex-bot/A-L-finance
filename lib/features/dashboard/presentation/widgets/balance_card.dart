@@ -36,99 +36,93 @@ class _BalanceCardState extends State<BalanceCard> {
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Saldo Conjunto',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        _isVisible ? LucideIcons.eye : LucideIcons.eyeOff,
-                        color: Colors.white.withOpacity(0.8),
-                        size: 20,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isVisible = !_isVisible;
-                        });
-                      },
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
                 Text(
-                  _isVisible ? r'R$ 24.500,00' : '••••••••',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: -1,
+                  'Saldo Conjunto',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.8),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  height: 60,
-                  child: LineChart(
-                    LineChartData(
-                      gridData: const FlGridData(show: false),
-                      titlesData: const FlTitlesData(show: false),
-                      borderData: FlBorderData(show: false),
-                      lineBarsData: [
-                        LineChartBarData(
-                          spots: const [
-                            FlSpot(0, 3),
-                            FlSpot(1, 4),
-                            FlSpot(2, 3.5),
-                            FlSpot(3, 5),
-                            FlSpot(4, 4),
-                            FlSpot(5, 6),
-                            FlSpot(6, 6.5),
-                          ],
-                          isCurved: true,
-                          color: AppColors.secondary,
-                          barWidth: 3,
-                          isStrokeCapRound: true,
-                          dotData: const FlDotData(show: false),
-                          belowBarData: BarAreaData(
-                            show: true,
-                            color: AppColors.secondary.withOpacity(0.2),
-                          ),
-                        ),
-                      ],
-                    ),
+                IconButton(
+                  icon: Icon(
+                    _isVisible ? LucideIcons.eye : LucideIcons.eyeOff,
+                    color: Colors.white.withOpacity(0.8),
+                    size: 20,
                   ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildSubBalance('Receitas', r'R$ 32.400', LucideIcons.arrowUpRight, AppColors.success),
-                    _buildSubBalance('Despesas', r'R$ 7.900', LucideIcons.arrowDownRight, AppColors.accent),
-                  ],
+                  onPressed: () {
+                    setState(() {
+                      _isVisible = !_isVisible;
+                    });
+                  },
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: 8),
+            Text(
+              _isVisible ? r'R$ 24.500,00' : '••••••••',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+                letterSpacing: -1,
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              height: 60,
+              child: LineChart(
+                LineChartData(
+                  gridData: const FlGridData(show: false),
+                  titlesData: const FlTitlesData(show: false),
+                  borderData: FlBorderData(show: false),
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: const [
+                        FlSpot(0, 3),
+                        FlSpot(1, 4),
+                        FlSpot(2, 3.5),
+                        FlSpot(3, 5),
+                        FlSpot(4, 4),
+                        FlSpot(5, 6),
+                        FlSpot(6, 6.5),
+                      ],
+                      isCurved: true,
+                      color: AppColors.secondary,
+                      barWidth: 3,
+                      isStrokeCapRound: true,
+                      dotData: const FlDotData(show: false),
+                      belowBarData: BarAreaData(
+                        show: true,
+                        color: AppColors.secondary.withOpacity(0.2),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildSubBalance('Receitas', r'R$ 32.400', LucideIcons.arrowUpRight, AppColors.success),
+                _buildSubBalance('Despesas', r'R$ 7.900', LucideIcons.arrowDownRight, AppColors.accent),
+              ],
+            ),
+          ],
         ),
       ),
-    ).animate().fade(duration: 600.ms).scale(begin: const Offset(0.95, 0.95));
+    );
   }
 
   Widget _buildSubBalance(String label, String amount, IconData icon, Color color) {

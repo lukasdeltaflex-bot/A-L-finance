@@ -61,6 +61,6 @@ class QuickActions extends StatelessWidget {
           ),
         ),
       ]
-    ).animate().fade(delay: delayMs.ms).slideY(begin: 0.2, end: 0, delay: delayMs.ms);
+    );
   }
 }

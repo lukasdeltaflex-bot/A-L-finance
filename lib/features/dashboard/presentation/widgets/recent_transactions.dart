@@ -108,6 +108,6 @@ class RecentTransactions extends StatelessWidget {
           ),
         ],
       ),
-    ).animate().fade(delay: delay.ms).slideX(begin: 0.1, end: 0, delay: delay.ms);
+    );
   }
 }

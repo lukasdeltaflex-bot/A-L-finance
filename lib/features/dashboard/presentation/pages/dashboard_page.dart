@@ -85,7 +85,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
         backgroundColor: AppColors.primary,
         elevation: 4,
         child: const Icon(LucideIcons.plus, color: Colors.white),
-      ).animate().scale(delay: 600.ms, duration: 400.ms, curve: Curves.easeOutBack),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
