@@ -1,112 +1,144 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:al_finance/core/theme/app_colors.dart';
+import 'package:intl/intl.dart';
 
 class RecentTransactions extends StatelessWidget {
   const RecentTransactions({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildTransaction(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Transações Recentes',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                letterSpacing: -0.5,
+              ),
+            ),
+            TextButton(
+              onPressed: () {},
+              child: const Text('Ver tudo'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        _buildTransactionItem(
           context,
           'Mercado Livre',
-          'Cartão Nubank •••• 1234',
-          r'- R$ 159,90',
+          'Compra parcelada • 1/10',
+          -159.90,
           LucideIcons.shoppingBag,
           Colors.orange,
-          0,
         ),
-        _buildTransaction(
+        _buildTransactionItem(
           context,
           'Salário Lukas',
-          'Conta Corrente',
-          r'+ R$ 12.500,00',
+          'Depósito recebido',
+          12500.00,
           LucideIcons.briefcase,
           AppColors.success,
-          100,
         ),
-        _buildTransaction(
+        _buildTransactionItem(
           context,
           'Netflix',
-          'Cartão Apple •••• 9999',
-          r'- R$ 55,90',
+          'Assinatura mensal',
+          -55.90,
           LucideIcons.monitorPlay,
           Colors.red,
-          200,
         ),
-        _buildTransaction(
+        _buildTransactionItem(
           context,
           'Restaurante Madero',
-          'Cartão XP •••• 4432',
-          r'- R$ 240,00',
+          'Alimentação',
+          -240.00,
           LucideIcons.utensils,
           Colors.purple,
-          300,
         ),
       ],
     );
   }
 
-  Widget _buildTransaction(
+  Widget _buildTransactionItem(
     BuildContext context,
     String title,
     String subtitle,
-    String amount,
+    double amount,
     IconData icon,
     Color iconColor,
-    int delay,
   ) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final isIncome = amount.startsWith('+');
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isIncome = amount > 0;
+    final currencyFormat = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: theme.cardTheme.color,
+        color: isDark ? AppColors.surfaceDark : Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isDark ? const Color(0xFF2C2C35) : const Color(0xFFEEEEEE),
+          color: isDark ? AppColors.dividerDark : AppColors.divider,
+          width: 1,
         ),
       ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(icon, color: iconColor, size: 24),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {},
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
               children: [
-                Text(
-                  title,
-                  style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: iconColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(icon, color: iconColor, size: 22),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 Text(
-                  subtitle,
-                  style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textMutedLight),
+                  (isIncome ? '+ ' : '- ') + currencyFormat.format(amount.abs()),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: isIncome ? AppColors.success : (isDark ? AppColors.textDark : AppColors.textLight),
+                  ),
                 ),
               ],
             ),
           ),
-          Text(
-            amount,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: isIncome ? AppColors.success : null,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
